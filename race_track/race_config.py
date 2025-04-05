@@ -3,17 +3,13 @@ import pickle
 config_race = {
     "observation": {
         "type": "OccupancyGrid",
-        "features": ['presence', 'on_road'],
+        "features": ["presence", "on_road"],
         "grid_size": [[-18, 18], [-18, 18]],
         "grid_step": [3, 3],
         "as_image": False,
-        "align_to_vehicle_axes": True
+        "align_to_vehicle_axes": True,
     },
-    "action": {
-        "type": "ContinuousAction",
-        "longitudinal": False,
-        "lateral": True
-    },
+    "action": {"type": "ContinuousAction", "longitudinal": False, "lateral": True},
     "simulation_frequency": 15,
     "policy_frequency": 5,
     "duration": 300,
@@ -28,7 +24,7 @@ config_race = {
     "scaling": 7,
     "show_trajectories": False,
     "render_agent": True,
-    "offscreen_rendering": False
+    "offscreen_rendering": False,
 }
 
 with open("config.pkl", "wb") as f:

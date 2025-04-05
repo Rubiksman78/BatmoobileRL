@@ -3,3 +3,5 @@ __pycache__
 *.pth
 *.png
 *.pkl
+roundabount/ppo_roundabout
+configs

@@ -1,6 +1,5 @@
 import pickle
 
-
 config_dict = {
     "observation": {
         "type": "OccupancyGrid",
