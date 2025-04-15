@@ -103,7 +103,7 @@ class GaussianNoise:
         return np.random.normal(self.mu, self.sigma, self.action_dim)
 
 class DDPG_agent():
-    def __init__(self, env):
+    def __init__(self, env, continueTraining = False):
         self.env = env
         self.total_rewards = []
         self.avg_reward = []
@@ -116,7 +116,7 @@ class DDPG_agent():
         self.device = device
         self.env = env
         self.max_episodes = 1000
-        self.max_steps_per_episode = 1000
+        self.max_steps_per_episode = 1500
         self.state_dim = np.prod(env.observation_space.shape)
         self.noise = GaussianNoise(action_dim=np.prod(env.action_space.shape))
         
@@ -135,13 +135,26 @@ class DDPG_agent():
         self.critic_criterion = nn.MSELoss()
 
         self.save_interval = 20
-        self.file_name = "ddpg_actor.pt"
+        self.file_name = "ddpg_checkpoint.pt"
         
         self.avg_lengths = []
         self.all_rewards = []
         
         self.batch_size = 128
         self.replay_buffer = Buffer(self.batch_size)
+        self.begin_step = 0
+        
+        if continueTraining:
+            checkpoint = torch.load(self.file_name,weights_only=False)
+            self.actor.load_state_dict(checkpoint['actor'])
+            self.critic.load_state_dict(checkpoint['critic'])
+            self.target_actor.load_state_dict(checkpoint['target_actor'])
+            self.target_critic.load_state_dict(checkpoint['target_critic'])
+            self.actor_optimizer.load_state_dict(checkpoint['actor_optimizer'])
+            self.critic_optimizer.load_state_dict(checkpoint['critic_optimizer'])
+            self.avg_lengths = checkpoint['avg_lengths']
+            self.all_rewards = checkpoint['all_rewards']
+            self.begin_step = checkpoint['step']
 
     def soft_update(self, net, target_net, tau=0.005):
         for param, target_param in zip(net.parameters(), target_net.parameters()):
@@ -211,7 +224,7 @@ class DDPG_agent():
         fig, ax = plt.subplots(1, 2)
         fig.set_size_inches(16, 6)
         global_step = 0
-        for step in range(self.max_episodes):
+        for step in range(self.begin_step, self.max_episodes):
             ep_reward, ep_step = self.rollout(global_step)
             global_step += ep_step
             self.avg_lengths.append(ep_step)
@@ -224,10 +237,22 @@ class DDPG_agent():
             ax[1].plot(np.arange(len(self.all_rewards)), self.all_rewards)
             plt.savefig("ddpg.png")
             if step % self.save_interval == 0:
-                torch.save(self.actor.state_dict(), self.file_name)
+                torch.save({
+                    'actor': self.actor.state_dict(),
+                    'critic': self.critic.state_dict(),
+                    'target_actor': self.target_actor.state_dict(),
+                    'target_critic': self.target_critic.state_dict(),
+                    'actor_optimizer': self.actor_optimizer.state_dict(),
+                    'critic_optimizer': self.critic_optimizer.state_dict(),
+                    'avg_lengths': self.avg_lengths,
+                    'all_rewards': self.all_rewards,
+                    'step': step,
+                }, self.file_name)
+                print("saved")
 
     def test(self):
-        self.actor.load_state_dict(torch.load(self.file_name))
+        checkpoint = torch.load(self.file_name,weights_only=False)
+        self.actor.load_state_dict(checkpoint['actor'])
         state, _ = self.env.reset()
         total_reward = 0
         while True:
@@ -254,11 +279,20 @@ torch.backends.cudnn.benchmark = False
 with open("config.pkl", "rb") as f:
     config = pickle.load(f)
 print(config)
-env = gym.make("racetrack-v0", render_mode="human")
-env.unwrapped.configure(config)
-print(env.observation_space.shape)
-print(env.action_space.shape)
-ddpg = DDPG_agent(env)
-# ddpg.learn()
-print("testing")
-ddpg.test()
+
+trainModel = False
+if trainModel:
+    env = gym.make("racetrack-v0")
+    env.unwrapped.configure(config)
+    print(env.observation_space.shape)
+    print(env.action_space.shape)
+    ddpg = DDPG_agent(env, continueTraining=True)
+    ddpg.learn()
+else:
+    env = gym.make("racetrack-v0", render_mode="human")
+    env.unwrapped.configure(config)
+    print(env.observation_space.shape)
+    print(env.action_space.shape)
+    ddpg = DDPG_agent(env, continueTraining=True)
+    print("testing")
+    ddpg.test()
