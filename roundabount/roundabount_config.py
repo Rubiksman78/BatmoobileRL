@@ -24,9 +24,9 @@ config = {
     #     },
     "action": {"type": "DiscreteMetaAction"},
     "collision_reward": -4,
-    "high_speed_reward": 0,
+    "high_speed_reward": 0.4,
     "right_lane_reward": 0,
-    "lane_change_reward": 0,
+    "lane_change_reward": -0.05,
     "incoming_vehicle_destination": None,
     "duration": 11,  # [s] If the environment runs for 11 seconds and still hasn't done(vehicle is crashed), it will be truncated. "Second" is expressed as the variable "time", equal to "the number of calls to the step method" / policy_frequency.
     "simulation_frequency": 15,  # [Hz]

@@ -12,6 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import tqdm
 from torch.distributions import Normal
+import time
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -282,6 +283,7 @@ class SAC:
                 total_reward += reward
                 if not plot:
                     self.env.render()
+                    time.sleep(0.1)
                 if terminated or truncated:
                     break
             if plot:
@@ -305,10 +307,10 @@ torch.backends.cudnn.benchmark = False
 with open("config.pkl", "rb") as f:
     config = pickle.load(f)
 print(config)
-env = gym.make("racetrack-v0")
+env = gym.make("racetrack-v0", render_mode="human")
 env.unwrapped.configure(config)
 print(env.observation_space.shape)
 print(env.action_space.shape)
 sac = SAC(env)
 # sac.learn()
-sac.test(plot=True, simulations=10)
+sac.test(plot=False, simulations=10)

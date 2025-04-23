@@ -6,13 +6,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import tqdm
 from stable_baselines3 import DQN, PPO
+import time
 
 with open("config.pkl", "rb") as f:
     config = pickle.load(f)
 print(config)
 
 env_name = "roundabout-v0"
-env = gym.make(env_name)
+env = gym.make(env_name, render_mode="human")
 env.unwrapped.configure(config)
 env.reset()
 
@@ -27,12 +28,14 @@ for i in tqdm.tqdm(range(n_experiments)):
     while True:
         action, _ = model.predict(next_state)
         obs, rewards, terminated, truncated, _ = env.step(action)
-        # env.render()
+        env.render()
+        time.sleep(0.5)
         total_reward += rewards
         done = terminated or truncated
         next_state = obs
         if done:
             break
+    time.sleep(1)           
     all_rewards.append(total_reward)
 
 # Plot distribution
