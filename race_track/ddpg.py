@@ -154,7 +154,8 @@ class DDPG_agent():
             self.critic_optimizer.load_state_dict(checkpoint['critic_optimizer'])
             self.avg_lengths = checkpoint['avg_lengths']
             self.all_rewards = checkpoint['all_rewards']
-            self.begin_step = checkpoint['step']
+            self.begin_step = checkpoint['step']+1
+            print(self.begin_step)
 
     def soft_update(self, net, target_net, tau=0.005):
         for param, target_param in zip(net.parameters(), target_net.parameters()):
@@ -248,23 +249,29 @@ class DDPG_agent():
                     'all_rewards': self.all_rewards,
                     'step': step,
                 }, self.file_name)
-                print("saved")
 
     def test(self):
         checkpoint = torch.load(self.file_name,weights_only=False)
         self.actor.load_state_dict(checkpoint['actor'])
-        state, _ = self.env.reset()
-        total_reward = 0
-        while True:
-            state = torch.Tensor(state).to(device).reshape(1, -1)
-            action, _, _ = self.actor.select_action(state)
-            action = action.detach().cpu().numpy()
-            state, reward, terminated, truncated, _ = self.env.step(action)
-            total_reward += reward
-            self.env.render()
-            if terminated or truncated:
-                break
-        print(f"Total reward: {total_reward}")
+        all_reward = []
+        for i in range(100):
+            print(i)
+            state, _ = self.env.reset()
+            total_reward = 0
+            while True:
+                state = torch.Tensor(state).to(device).reshape(1, -1)
+                action, _, _ = self.actor.select_action(state)
+                action = action.detach().cpu().numpy()
+                state, reward, terminated, truncated, _ = self.env.step(action)
+                total_reward += reward
+                self.env.render()
+                if terminated or truncated:
+                    break
+            all_reward.append(total_reward)
+        plt.hist(all_reward, bins="auto",edgecolor='black', color="blue")
+        plt.savefig("ddpg_reward_test.png")
+        plt.close()
+        
 
 
 # seed

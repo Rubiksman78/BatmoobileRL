@@ -71,26 +71,30 @@ print(config)
 
 def make_configured_env(config):
     def _init():
-        env = gym.make("roundabout-v0")
+        env = gym.make("merge-v0")
         env.unwrapped.configure(config)
         return env
 
     return _init
 
 
-env_name = "roundabout-v0"
+env_name = "merge-v0"
 env = gym.make(env_name)
 env.unwrapped.configure(config)
 
+# Vérifiez la forme des observations
+obs,_ = env.reset()
+print(obs.shape)
+
 n_envs = 32
 vec_env = make_vec_env(make_configured_env(config), n_envs=n_envs, seed=SEED)
-vec_env = VecMonitor(vec_env, "dqn_roundabout")
-env = Monitor(env,"dqn_roundabout/dqn")
+vec_env = VecMonitor(vec_env, "dqn_merge")
+env = Monitor(env,"dqn_merge/dqn")
 
 callback = SaveOnBestTrainingRewardCallback(
-    check_freq=max(100 // n_envs, 1), log_dir="dqn_roundabout"
+    check_freq=max(100 // n_envs, 1), log_dir="dqn_merge"
 )
 model = DQN("MlpPolicy", env, verbose=1)
-model.learn(total_timesteps=1e5, log_interval=20, callback=callback)
-model.save("dqn_roundabout_save")
-model.save("./dqn_roundabout/best_model.zip")
+# model.learn(total_timesteps=1e3, log_interval=20, callback=callback)
+model.save("dqn_merge_save")
+model.save("./dqn_merge/best_model.zip")
