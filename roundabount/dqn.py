@@ -24,7 +24,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
 
     def _plot_rewards(self, rewards):
         plt.plot(np.arange(len(rewards)), rewards)
-        plt.savefig("ppo.png")
+        plt.savefig("dqn.png")
         plt.close()
 
     def _init_callback(self) -> None:
@@ -82,14 +82,15 @@ env_name = "roundabout-v0"
 env = gym.make(env_name)
 env.unwrapped.configure(config)
 
-n_envs = 2
+n_envs = 32
 vec_env = make_vec_env(make_configured_env(config), n_envs=n_envs, seed=SEED)
-vec_env = VecMonitor(vec_env, "ppo_roundabout")
-# env = Monitor(env,"ppo_roundabout/ppo")
+vec_env = VecMonitor(vec_env, "dqn_roundabout")
+env = Monitor(env,"dqn_roundabout/dqn")
 
 callback = SaveOnBestTrainingRewardCallback(
-    check_freq=max(100 // n_envs, 1), log_dir="ppo_roundabout"
+    check_freq=max(100 // n_envs, 1), log_dir="dqn_roundabout"
 )
 model = DQN("MlpPolicy", env, verbose=1)
-model.learn(total_timesteps=1e4, log_interval=20, callback=callback)
-model.save("ppo_roundabout_save")
+model.learn(total_timesteps=1e5, log_interval=20, callback=callback)
+model.save("dqn_roundabout_save")
+model.save("./dqn_roundabout/best_model.zip")
