@@ -39,7 +39,7 @@ config_dict = {
     "screen_height": 150,  # [px]
     "centering_position": [0.3, 0.5],
     "scaling": 5.5,
-    "show_trajectories": True,
+    "show_trajectories": False,
     "render_agent": True,
     "offscreen_rendering": False,
     "disable_collision_checks": True,
@@ -47,7 +47,3 @@ config_dict = {
 
 with open("config.pkl", "wb") as f:
     pickle.dump(config_dict, f)
-
-# env = gym.make("highway-fast-v0", render_mode="rgb_array")
-# env.unwrapped.configure(config)
-# print(env.reset())

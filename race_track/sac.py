@@ -6,10 +6,13 @@ import gymnasium as gym
 import highway_env
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import tqdm
 from torch.distributions import Normal
+import time
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -266,20 +269,30 @@ class SAC:
                 torch.save(self.critic1.state_dict(), "sac_critic1.pt")
                 torch.save(self.critic2.state_dict(), "sac_critic2.pt")
 
-    def test(self):
+    def test(self, plot=False, simulations=100):
         self.actor.load_state_dict(torch.load("sac_actor.pt"))
-        state, _ = self.env.reset()
-        total_reward = 0
-        while True:
-            state = torch.Tensor(state).to(device).reshape(1, -1)
-            action, _, _ = self.actor.select_action(state)
-            action = action.detach().cpu().numpy()
-            state, reward, terminated, truncated, _ = self.env.step(action)
-            total_reward += reward
-            self.env.render()
-            if terminated or truncated:
-                break
-        print(f"Total reward: {total_reward}")
+        all_rewards = []
+        for _ in tqdm.tqdm(range(simulations)):
+            state, _ = self.env.reset()
+            total_reward = 0
+            while True:
+                state = torch.Tensor(state).to(device).reshape(1, -1)
+                action, _, _ = self.actor.select_action(state)
+                action = action.detach().cpu().numpy()
+                state, reward, terminated, truncated, _ = self.env.step(action)
+                total_reward += reward
+                if not plot:
+                    self.env.render()
+                    time.sleep(0.1)
+                if terminated or truncated:
+                    break
+            if plot:
+                all_rewards.append(total_reward)
+            else:
+                print(f"Total reward: {total_reward}")
+        if plot:
+            sns.displot(all_rewards, kde=True, bins=100)
+            plt.savefig("sac_test.png")
 
 
 # seed
@@ -300,4 +313,4 @@ print(env.observation_space.shape)
 print(env.action_space.shape)
 sac = SAC(env)
 # sac.learn()
-sac.test()
+sac.test(plot=False, simulations=10)
