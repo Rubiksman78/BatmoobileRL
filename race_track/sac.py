@@ -2,6 +2,7 @@
 
 import pickle
 import random
+import time
 from collections import deque, namedtuple
 
 import gymnasium as gym
@@ -14,7 +15,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import tqdm
 from torch.distributions import Normal
-import time
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -299,6 +299,7 @@ class SAC:
 
 # seed
 SEED = 69
+LEARN = False
 
 torch.manual_seed(SEED)
 if torch.cuda.is_available():
@@ -314,5 +315,7 @@ env.unwrapped.configure(config)
 print(env.observation_space.shape)
 print(env.action_space.shape)
 sac = SAC(env)
-# sac.learn()
-sac.test(plot=False, simulations=10)
+if LEARN:
+    sac.learn()
+else:
+    sac.test(plot=False, simulations=10)

@@ -1,6 +1,7 @@
 # Paul Massey script
 
 import pickle
+import time
 
 import gymnasium as gym
 import highway_env
@@ -8,7 +9,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import tqdm
 from stable_baselines3 import DQN
-import time
 
 with open("config.pkl", "rb") as f:
     config = pickle.load(f)
@@ -37,10 +37,10 @@ for i in tqdm.tqdm(range(n_experiments)):
         next_state = obs
         if done:
             break
-    time.sleep(1)           
+    time.sleep(1)
     all_rewards.append(total_reward)
 
 # Plot distribution
-sns.histplot(all_rewards, bins=200, kde=True, stat='count', element='bars', linewidth=0)
+sns.histplot(all_rewards, bins=200, kde=True, stat="count", element="bars", linewidth=0)
 plt.savefig("test_dqn.png")
 plt.close()

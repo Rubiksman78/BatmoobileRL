@@ -87,7 +87,7 @@ env.unwrapped.configure(config)
 n_envs = 32
 vec_env = make_vec_env(make_configured_env(config), n_envs=n_envs, seed=SEED)
 vec_env = VecMonitor(vec_env, "dqn_roundabout")
-env = Monitor(env,"dqn_roundabout/dqn")
+env = Monitor(env, "dqn_roundabout/dqn")
 
 callback = SaveOnBestTrainingRewardCallback(
     check_freq=max(100 // n_envs, 1), log_dir="dqn_roundabout"

@@ -11,8 +11,8 @@ import highway_env
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
-from network import DQN
 
 with open("config.pkl", "rb") as f:
     config = pickle.load(f)
@@ -23,6 +23,19 @@ env.unwrapped.configure(config)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 Transition = namedtuple("Transition", ("state", "action", "next_sate", "reward"))
+
+
+class DQN(nn.Module):
+    def __init__(self, n_observations, n_actions, n_hidden=64):
+        super().__init__()
+        self.layer1 = nn.Linear(n_observations, n_hidden)
+        self.layer2 = nn.Linear(n_hidden, n_hidden)
+        self.layer3 = nn.Linear(n_hidden, n_actions)
+
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        return self.layer3(x)
 
 
 class ReplayMemory(object):

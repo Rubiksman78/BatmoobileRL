@@ -1,6 +1,7 @@
 # Samuel Sithakoul script
 
 import pickle
+import time
 
 import gymnasium as gym
 import highway_env
@@ -8,7 +9,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import tqdm
 from stable_baselines3 import DQN, PPO
-import time
 
 with open("config.pkl", "rb") as f:
     config = pickle.load(f)
@@ -37,7 +37,7 @@ for i in tqdm.tqdm(range(n_experiments)):
         next_state = obs
         if done:
             break
-    time.sleep(1)           
+    time.sleep(1)
     all_rewards.append(total_reward)
 
 # Plot distribution

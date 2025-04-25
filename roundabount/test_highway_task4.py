@@ -5,10 +5,10 @@ import time
 
 import gymnasium as gym
 import highway_env
-from stable_baselines3 import DQN, PPO
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from stable_baselines3 import DQN, PPO
 
 with open("config_highway.pkl", "rb") as f:
     config = pickle.load(f)
@@ -34,6 +34,6 @@ for i in range(100):
         if done:
             break
     all_rewards.append(total_reward)
-sns.histplot(all_rewards, bins=200, kde=True, stat='count', element='bars', linewidth=0)
+sns.histplot(all_rewards, bins=200, kde=True, stat="count", element="bars", linewidth=0)
 plt.savefig("test_dqn_highway.png")
 plt.close()

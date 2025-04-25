@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import torch
 import tqdm
-from network import DQN
+from dqn import DQN
 
 with open("config.pkl", "rb") as f:
     config = pickle.load(f)
 print(config)
 
-env = gym.make("highway-fast-v0",render_mode="human")
+env = gym.make("highway-fast-v0", render_mode="human")
 env.unwrapped.configure(config)
 # env.unwrapped.config["duration"] = 60
 env.reset()
