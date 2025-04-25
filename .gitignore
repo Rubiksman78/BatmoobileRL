@@ -3,7 +3,7 @@ __pycache__
 *.pth
 *.png
 *.pkl
-roundabount/ppo_roundabout
+roundabout/ppo_roundabout
 configs
 venv
-roundabount/dqn_roundabout
+roundabout/dqn_roundabout
