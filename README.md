@@ -2,7 +2,9 @@
 
 This project aims to train Reinforcement Learning (RL) agents in autonomous driving environments provided by the `highway-env` library.
 
-![Deja Vu](images/dejavu.gif)
+<p align="center">
+  <img src="images/dejavu.gif" width="400"/>
+</p>
 
 Three environments are used divided in the repository structure:
 - `car_lane`: DQN agent on the `Highway` environment
