@@ -1,3 +1,5 @@
+# Samuel Sithakoul script
+
 import math
 import pickle
 import random

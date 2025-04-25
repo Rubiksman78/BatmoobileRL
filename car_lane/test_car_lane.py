@@ -1,3 +1,5 @@
+# Samuel Sithakoul script
+
 import pickle
 import time
 

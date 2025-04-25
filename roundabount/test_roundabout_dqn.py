@@ -1,4 +1,4 @@
-# Samuel Sithakoul script
+# Paul Massey script
 
 import pickle
 
@@ -7,7 +7,7 @@ import highway_env
 import matplotlib.pyplot as plt
 import seaborn as sns
 import tqdm
-from stable_baselines3 import DQN, PPO
+from stable_baselines3 import DQN
 import time
 
 with open("config.pkl", "rb") as f:
@@ -19,8 +19,8 @@ env = gym.make(env_name, render_mode="human")
 env.unwrapped.configure(config)
 env.reset()
 
-# model = PPO.load("ppo_roundabout/best_model_occupancygrid.zip", env)
-model = PPO.load("ppo_roundabout/best_model.zip", env)
+model = DQN.load("dqn_roundabout/best_model.zip", env)
+
 all_rewards = []
 n_experiments = 100
 for i in tqdm.tqdm(range(n_experiments)):
@@ -41,5 +41,6 @@ for i in tqdm.tqdm(range(n_experiments)):
     all_rewards.append(total_reward)
 
 # Plot distribution
-sns.displot(all_rewards, kde=True, bins=100)
-plt.savefig("ppo_test.png")
+sns.histplot(all_rewards, bins=200, kde=True, stat='count', element='bars', linewidth=0)
+plt.savefig("test_dqn.png")
+plt.close()

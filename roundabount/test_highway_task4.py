@@ -1,3 +1,5 @@
+# Paul Massey script
+
 import pickle
 import time
 

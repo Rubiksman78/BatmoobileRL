@@ -1,4 +1,5 @@
-import os
+# Paul Massey script
+
 import random
 import pickle
 import copy
