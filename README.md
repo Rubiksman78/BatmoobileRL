@@ -1,4 +1,4 @@
-# Cars are fast
+# Cars are fast :truck:
 
 This project aims to train Reinforcement Learning (RL) agents in autonomous driving environments provided by the `highway-env` library.
 
